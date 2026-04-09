@@ -1,2 +1,16 @@
 /* Estilos globales del componente raíz */
 /* La mayor parte del estilo viene de Tailwind CSS en styles.css */
+
+form input:focus {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+form input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+form button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+}
