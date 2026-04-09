@@ -1,0 +1,74 @@
+<div style="min-height:100vh; background-color:#f3f4f6; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+
+  <!-- HEADER -->
+  <header style="background-color:#1d4ed8; padding:0.875rem 1.5rem; box-shadow:0 2px 6px rgba(0,0,0,0.2)">
+    <div style="max-width:1024px; margin:0 auto; display:flex; align-items:center; gap:0.75rem">
+      <div style="width:40px; height:40px; background-color:#facc15; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.125rem; color:#1e3a8a; flex-shrink:0">
+        VT
+      </div>
+      <div>
+        <p style="color:#ffffff; font-size:1rem; font-weight:700; line-height:1.2; margin:0">Viboral Telecomunicaciones</p>
+        <p style="color:#bfdbfe; font-size:0.75rem; margin:0">Portal del Cliente</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO CON BUSCADOR -->
+  <section style="background:linear-gradient(160deg,#1d4ed8 0%,#3b82f6 100%); padding:3rem 1.5rem">
+    <div style="max-width:520px; margin:0 auto; text-align:center">
+      <div style="font-size:2.5rem; margin-bottom:0.75rem">📺</div>
+      <h1 style="color:#ffffff; font-size:1.5rem; font-weight:700; margin:0 0 0.5rem">Consulta tu cuenta</h1>
+      <p style="color:#bfdbfe; font-size:0.875rem; margin:0 0 1.5rem; line-height:1.6">
+        Ingresa tu cédula para ver el estado de tus servicios, atenciones y facturas.
+      </p>
+
+      <form [formGroup]="searchForm" (ngSubmit)="buscarCliente()"
+            style="display:flex; gap:0.5rem">
+        <input
+          formControlName="cedula"
+          type="text"
+          placeholder="Número de cédula o documento"
+          style="flex:1; padding:0.75rem 1rem; border-radius:0.75rem; border:none; font-size:0.875rem; color:#1f2937; outline:none; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-family:inherit"
+        />
+        <button
+          type="submit"
+          [disabled]="isSearching() || searchForm.invalid"
+          style="padding:0.75rem 1.25rem; background-color:#facc15; color:#1e3a8a; font-weight:700; font-size:0.875rem; border:none; border-radius:0.75rem; cursor:pointer; white-space:nowrap; font-family:inherit; opacity:1; transition:opacity 0.15s"
+          [style.opacity]="(isSearching() || searchForm.invalid) ? '0.6' : '1'"
+        >
+          @if (isSearching()) {
+            Buscando...
+          } @else {
+            🔍 Buscar
+          }
+        </button>
+      </form>
+
+      @if (searchError()) {
+        <div style="margin-top:1rem; background-color:#fef2f2; border:1px solid #fecaca; color:#dc2626; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.875rem; text-align:left; display:flex; gap:0.5rem">
+          <span>⚠️</span>
+          <span>{{ searchError() }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main style="max-width:1024px; margin:0 auto; padding:2rem 1rem">
+
+    @if (clientes().length > 0) {
+      <app-dashboard [clientes]="clientes()" [cedula]="searchedCedula()" />
+    }
+
+    @if (clientes().length === 0 && !isSearching() && !searchError()) {
+      <div style="text-align:center; padding:5rem 1rem; color:#9ca3af">
+        <div style="font-size:3.5rem; margin-bottom:1rem">🔍</div>
+        <p style="font-size:1.125rem; font-weight:500; color:#6b7280; margin:0 0 0.375rem">¿Listo para consultar?</p>
+        <p style="font-size:0.875rem; margin:0">Ingresa tu número de documento para comenzar</p>
+      </div>
+    }
+
+  </main>
+
+</div>
+<router-outlet />
