@@ -18,7 +18,7 @@ export class App {
   private readonly api = inject(ClienteApiService);
 
   searchForm = this.fb.group({
-    cedula: ['', [Validators.required, Validators.minLength(5)]],
+    cedula: ['', Validators.required],
   });
 
   // ✅ Ahora guarda TODOS los registros del cliente, no solo el primero
