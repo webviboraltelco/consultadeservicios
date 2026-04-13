@@ -1,10 +1,23 @@
-/dist
-/tmp
-/out-tsc
-/bazel-out
-/node_modules
-npm-debug.log
-yarn-error.log
+# ─── Dependencias ────────────────────────────────────
+node_modules/
+
+# ─── Build / compilación ─────────────────────────────
+dist/
+out-tsc/
+bazel-out/
+tmp/
+
+# ─── Angular cache ───────────────────────────────────
+.angular/
+
+# ─── Archivos de entorno con secrets ─────────────────
+# NUNCA subir estos al repo
+src/environments/environment.development.ts
+src/environments/environment.ts
+.env
+.env.*
+
+# ─── IDE / editores ──────────────────────────────────
 .idea/
 .project
 .classpath
@@ -12,19 +25,30 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.history/
+
+# ─── VS Code (solo sube configuración del equipo) ────
 .vscode/*
+!.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
+
+# ─── Sistema operativo ───────────────────────────────
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+# ─── Logs ────────────────────────────────────────────
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# ─── Tests / cobertura ───────────────────────────────
+coverage/
+/connect.lock
+testem.log
+
+# ─── Otros ───────────────────────────────────────────
+*.zip
+__screenshots__/
