@@ -28,7 +28,7 @@
           {{ estadoGeneral() }}
         </span>
         <div style="text-align:right">
-          <p style="font-size:0.6875rem; color:#9ca3af; margin:0 0 0.125rem; text-align:right">Saldo total pendiente</p>
+          <p style="font-size:0.6875rem; color:#9ca3af; margin:0 0 0.125rem">Saldo total pendiente</p>
           <p
             style="font-size:1.25rem; font-weight:700; margin:0"
             [style.color]="deudaTotal() > 0 ? '#dc2626' : '#16a34a'"
@@ -42,7 +42,7 @@
   </div>
   }
 
-  <!-- ===== CUENTAS / SERVICIOS (si hay más de una) ===== -->
+  <!-- ===== CUENTAS / DIRECCIONES ===== -->
   @if (clientes().length > 1) {
   <div style="margin-bottom:1.5rem">
     <p style="font-size:0.8125rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.75rem">
@@ -90,10 +90,11 @@
   </div>
   }
 
+  <!-- Si solo hay una cuenta muestra su dirección como banner -->
   @if (clientes().length === 1) {
   <div style="background-color:#f0f9ff; border:1px solid #bae6fd; border-radius:0.75rem; padding:0.875rem 1rem; margin-bottom:1.5rem">
     <p style="font-size:0.8125rem; color:#0369a1; margin:0">
-      📍 <strong>Dirección:</strong> {{ clientes()[0].direccion }} — Cód. {{ clientes()[0].codigo }}
+      📍 <strong>Dirección del servicio:</strong> {{ clientes()[0].direccion }} — Cód. {{ clientes()[0].codigo }}
     </p>
   </div>
   }
@@ -101,7 +102,7 @@
   <!-- ===== PANEL DE TABS ===== -->
   <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:1rem; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06)">
 
-    <!-- Navegación -->
+    <!-- Navegación de pestañas -->
     <div style="display:flex; border-bottom:1px solid #e5e7eb; overflow-x:auto">
       @for (tab of tabs; track tab.id) {
         <button
@@ -118,33 +119,212 @@
 
     <div style="padding:1.5rem">
 
-      <!-- TAB: SERVICIOS -->
+      <!-- ===================================================
+           TAB: SERVICIOS — usa el nuevo endpoint con codigo
+      ==================================================== -->
       @if (activeTab() === 'servicios') {
-        @if (loadingServicios()) { <ng-container *ngTemplateOutlet="loadingTpl; context:{msg:'servicios'}"></ng-container> }
-        @else if (errorServicios()) { <ng-container *ngTemplateOutlet="errorTpl; context:{msg:errorServicios()}"></ng-container> }
-        @else if (servicios().length === 0) { <ng-container *ngTemplateOutlet="emptyTpl; context:{title:'Sin servicios',msg:'No hay servicios activos para este cliente'}"></ng-container> }
+
+        @if (loadingServicios()) {
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
+            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
+            <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando servicios...</p>
+          </div>
+        }
+
+        @else if (errorServicios()) {
+          <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
+            <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
+            <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Error al cargar servicios</p>
+            <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorServicios() }}</p>
+          </div>
+        }
+
+        @else if (servicios().length === 0) {
+          <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
+            <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
+            <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin servicios registrados</p>
+            <p style="font-size:0.8125rem; margin:0">No hay servicios para esta cuenta</p>
+          </div>
+        }
+
         @else {
-          <ng-container *ngTemplateOutlet="tablaTpl; context:{cols:serviciosColumns(), filas:servicios(), mostrarAccion:false}"></ng-container>
-          <p style="font-size:0.75rem; color:#9ca3af; margin:0.75rem 0 0">{{ servicios().length }} registro(s)</p>
+
+          <!-- Indicador de la cuenta consultada -->
+          <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem">
+            <span style="font-size:1rem">📍</span>
+            <p style="font-size:0.8125rem; color:#0369a1; margin:0">
+              <strong>{{ cuentaSeleccionada()?.direccion }}</strong>
+              &nbsp;·&nbsp; Cód. {{ cuentaSeleccionada()?.codigo }}
+            </p>
+          </div>
+
+          <!-- Resumen de contadores -->
+          <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; flex-wrap:wrap">
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span style="font-size:1.125rem">✅</span>
+              <div>
+                <p style="font-size:0.625rem; color:#15803d; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Activos</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#15803d; margin:0; line-height:1">{{ serviciosActivos() }}</p>
+              </div>
+            </div>
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span style="font-size:1.125rem">⛔</span>
+              <div>
+                <p style="font-size:0.625rem; color:#b91c1c; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Retirados</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#b91c1c; margin:0; line-height:1">{{ serviciosRetirados() }}</p>
+              </div>
+            </div>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span style="font-size:1.125rem">📋</span>
+              <div>
+                <p style="font-size:0.625rem; color:#1d4ed8; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Total</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#1d4ed8; margin:0; line-height:1">{{ servicios().length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjetas de servicios -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:0.875rem">
+            @for (srv of servicios(); track srv.idServicio) {
+              <div
+                style="background:#ffffff; border-radius:1rem; padding:1.25rem; border:1px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.06)"
+                [style.border-left]="srv.Estado === 'ACTIVO' ? '4px solid #22c55e' : '4px solid #ef4444'"
+              >
+                <!-- Header -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.875rem">
+                  <div style="flex:1; min-width:0; margin-right:0.5rem">
+                    <p style="font-size:0.9375rem; font-weight:700; color:#1f2937; margin:0 0 0.25rem; line-height:1.3">
+                      {{ srv.NombreServicio }}
+                    </p>
+                    <p style="font-size:0.75rem; color:#9ca3af; margin:0">
+                      ID: {{ srv.idServicio }}
+                    </p>
+                  </div>
+                  <span
+                    style="display:inline-block; padding:0.25rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:700; text-transform:uppercase; flex-shrink:0"
+                    [style.background-color]="srv.Estado === 'ACTIVO' ? '#dcfce7' : '#fee2e2'"
+                    [style.color]="srv.Estado === 'ACTIVO' ? '#15803d' : '#b91c1c'"
+                  >
+                    {{ srv.Estado }}
+                  </span>
+                </div>
+
+                <!-- Separador -->
+                <div style="height:1px; background:#f3f4f6; margin:0 0 0.875rem"></div>
+
+                <!-- Tarifa -->
+                <div style="margin-bottom:0.75rem">
+                  <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.25rem; font-weight:600">
+                    Plan / Tarifa
+                  </p>
+                  <p style="font-size:0.8125rem; color:#374151; font-weight:500; margin:0; line-height:1.4">
+                    {{ srv.Tarifa }}
+                  </p>
+                </div>
+
+                <!-- Precio -->
+                <div style="background:#f9fafb; border-radius:0.625rem; padding:0.625rem 0.875rem; display:flex; justify-content:space-between; align-items:center">
+                  <p style="font-size:0.75rem; color:#6b7280; margin:0">Precio tarifa</p>
+                  <p
+                    style="font-size:1rem; font-weight:700; margin:0"
+                    [style.color]="srv.PrecioTarifa > 0 ? '#1d4ed8' : '#6b7280'"
+                  >
+                    {{ srv.PrecioTarifa > 0 ? ('$' + (srv.PrecioTarifa | number:'1.0-0')) : 'Incluido' }}
+                  </p>
+                </div>
+
+              </div>
+            }
+          </div>
+
         }
       }
 
-      <!-- TAB: ATENCIONES -->
+      <!-- ===================================================
+           TAB: ATENCIONES
+      ==================================================== -->
       @if (activeTab() === 'atenciones') {
-        @if (loadingAtenciones()) { <ng-container *ngTemplateOutlet="loadingTpl; context:{msg:'atenciones'}"></ng-container> }
-        @else if (errorAtenciones()) { <ng-container *ngTemplateOutlet="errorTpl; context:{msg:errorAtenciones()}"></ng-container> }
-        @else if (atenciones().length === 0) { <ng-container *ngTemplateOutlet="emptyTpl; context:{title:'Sin atenciones',msg:'No hay historial de atenciones para este cliente'}"></ng-container> }
+
+        @if (loadingAtenciones()) {
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
+            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
+            <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando atenciones...</p>
+          </div>
+        }
+
+        @else if (errorAtenciones()) {
+          <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
+            <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
+            <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Error al cargar atenciones</p>
+            <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorAtenciones() }}</p>
+          </div>
+        }
+
+        @else if (atenciones().length === 0) {
+          <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
+            <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
+            <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin atenciones registradas</p>
+            <p style="font-size:0.8125rem; margin:0">No hay historial de atenciones para esta cuenta</p>
+          </div>
+        }
+
         @else {
-          <ng-container *ngTemplateOutlet="tablaTpl; context:{cols:atencionesColumns(), filas:atenciones(), mostrarAccion:false}"></ng-container>
+          <div style="overflow-x:auto; border-radius:0.75rem; border:1px solid #f3f4f6">
+            <table style="width:100%; border-collapse:collapse; font-size:0.875rem">
+              <thead>
+                <tr style="background-color:#f9fafb; border-bottom:1px solid #e5e7eb">
+                  @for (col of atencionesColumns(); track col) {
+                    <th style="padding:0.75rem 1rem; text-align:left; font-size:0.6875rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap">
+                      {{ formatLabel(col) }}
+                    </th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of atenciones(); track $index) {
+                  <tr style="border-bottom:1px solid #f3f4f6">
+                    @for (col of atencionesColumns(); track col) {
+                      <td style="padding:0.75rem 1rem; color:#374151; white-space:nowrap">
+                        {{ formatValue(row[col]) }}
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
           <p style="font-size:0.75rem; color:#9ca3af; margin:0.75rem 0 0">{{ atenciones().length }} registro(s)</p>
         }
       }
 
-      <!-- TAB: FACTURAS -->
+      <!-- ===================================================
+           TAB: FACTURAS
+      ==================================================== -->
       @if (activeTab() === 'facturas') {
-        @if (loadingFacturas()) { <ng-container *ngTemplateOutlet="loadingTpl; context:{msg:'facturas'}"></ng-container> }
-        @else if (errorFacturas()) { <ng-container *ngTemplateOutlet="errorTpl; context:{msg:errorFacturas()}"></ng-container> }
-        @else if (facturas().length === 0) { <ng-container *ngTemplateOutlet="emptyTpl; context:{title:'Sin facturas',msg:'No hay historial de facturación'}"></ng-container> }
+
+        @if (loadingFacturas()) {
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
+            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
+            <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando facturas...</p>
+          </div>
+        }
+
+        @else if (errorFacturas()) {
+          <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
+            <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
+            <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Error al cargar facturas</p>
+            <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorFacturas() }}</p>
+          </div>
+        }
+
+        @else if (facturas().length === 0) {
+          <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
+            <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
+            <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin facturas registradas</p>
+            <p style="font-size:0.8125rem; margin:0">No hay historial de facturación para esta cuenta</p>
+          </div>
+        }
+
         @else {
           <div style="overflow-x:auto; border-radius:0.75rem; border:1px solid #f3f4f6">
             <table style="width:100%; border-collapse:collapse; font-size:0.875rem">
@@ -200,15 +380,11 @@
           @if (facturaDetalle()) {
             <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #f3f4f6">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-                <p style="font-size:1rem; font-weight:600; color:#374151; margin:0; display:flex; align-items:center; gap:0.5rem">
-                  🧾 Detalle de Factura
-                </p>
+                <p style="font-size:1rem; font-weight:600; color:#374151; margin:0">🧾 Detalle de Factura</p>
                 <button
                   (click)="cerrarDetalle()"
                   style="background:none; border:none; font-size:1.5rem; color:#9ca3af; cursor:pointer; width:2rem; height:2rem; border-radius:50%; display:flex; align-items:center; justify-content:center; line-height:1"
-                >
-                  ×
-                </button>
+                >×</button>
               </div>
               <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:0.75rem">
                 @for (entry of facturaDetalleEntries(); track entry[0]) {
@@ -231,54 +407,3 @@
   </div>
 
 </div>
-
-<!-- ── Templates reutilizables ── -->
-<ng-template #loadingTpl let-msg="msg">
-  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
-    <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
-    <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando {{ msg }}...</p>
-  </div>
-</ng-template>
-
-<ng-template #errorTpl let-msg="msg">
-  <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
-    <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
-    <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Ocurrió un error</p>
-    <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ msg }}</p>
-  </div>
-</ng-template>
-
-<ng-template #emptyTpl let-title="title" let-msg="msg">
-  <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
-    <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
-    <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">{{ title }}</p>
-    <p style="font-size:0.8125rem; margin:0">{{ msg }}</p>
-  </div>
-</ng-template>
-
-<ng-template #tablaTpl let-cols="cols" let-filas="filas" let-mostrarAccion="mostrarAccion">
-  <div style="overflow-x:auto; border-radius:0.75rem; border:1px solid #f3f4f6">
-    <table style="width:100%; border-collapse:collapse; font-size:0.875rem">
-      <thead>
-        <tr style="background-color:#f9fafb; border-bottom:1px solid #e5e7eb">
-          @for (col of cols; track col) {
-            <th style="padding:0.75rem 1rem; text-align:left; font-size:0.6875rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap">
-              {{ formatLabel(col) }}
-            </th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of filas; track $index) {
-          <tr style="border-bottom:1px solid #f3f4f6">
-            @for (col of cols; track col) {
-              <td style="padding:0.75rem 1rem; color:#374151; white-space:nowrap">
-                {{ formatValue(row[col]) }}
-              </td>
-            }
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</ng-template>

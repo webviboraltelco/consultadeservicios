@@ -86,3 +86,19 @@ export const environment = {
 - `43466173`
 - `0100047048`
 - `0100047053`
+## Configuración inicial
+
+1. Clona el repositorio
+2. Instala dependencias: `npm install`
+3. Crea los archivos de entorno a partir de la plantilla:
+
+```bash
+cp src/environments/environment.template.ts src/environments/environment.development.ts
+cp src/environments/environment.template.ts src/environments/environment.ts
+```
+
+4. Edita ambos archivos con los valores reales (pide el token al líder del proyecto)
+5. Corre el proyecto: `npm start`
+
+> ⚠️ Los archivos `environment.development.ts` y `environment.ts` están en `.gitignore`.
+> Nunca los subas al repositorio.

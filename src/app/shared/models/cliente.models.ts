@@ -6,6 +6,21 @@ export interface ApiResponse<T> {
   resultado: T;
 }
 
+// ✅ Respuesta específica del endpoint de servicios
+export interface ServiciosResponse {
+  codigo: string;
+  mensaje: string;
+  servicios: Servicio[];
+}
+
+export interface Servicio {
+  idServicio: number;
+  NombreServicio: string;
+  PrecioTarifa: number;
+  Tarifa: string;
+  Estado: string;
+}
+
 export interface Cliente {
   codigo: string;
   nombres: string;

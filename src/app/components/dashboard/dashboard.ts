@@ -7,34 +7,32 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ClienteApiService } from '../../shared/services/cliente-api.service';
 import {
   ActiveTab,
   Cliente,
   DatosGenericos,
+  Servicio,
 } from '../../shared/models/cliente.models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, NgTemplateOutlet],
+  imports: [DecimalPipe],
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent implements OnInit {
   private readonly api = inject(ClienteApiService);
 
-  // ✅ Recibe todas las cuentas del cliente
   clientes = input.required<Cliente[]>();
   cedula = input.required<string>();
 
-  // Cuenta actualmente seleccionada (por defecto la primera)
   cuentaSeleccionada = signal<Cliente | null>(null);
-
-  // Tabs de información
   activeTab = signal<ActiveTab>('servicios');
 
-  servicios = signal<DatosGenericos[]>([]);
+  // ✅ Tipado correcto para servicios
+  servicios = signal<Servicio[]>([]);
   atenciones = signal<DatosGenericos[]>([]);
   facturas = signal<DatosGenericos[]>([]);
   facturaDetalle = signal<DatosGenericos | null>(null);
@@ -49,32 +47,22 @@ export class DashboardComponent implements OnInit {
   errorFacturas = signal<string | null>(null);
   errorDetalle = signal<string | null>(null);
 
-  private serviciosLoaded = false;
-  private atencionesLoaded = false;
-  private facturasLoaded = false;
-
   readonly tabs: { id: ActiveTab; label: string; icon: string }[] = [
     { id: 'servicios', label: 'Servicios', icon: '📡' },
     { id: 'atenciones', label: 'Atenciones', icon: '🛠️' },
     { id: 'facturas', label: 'Facturas', icon: '🧾' },
   ];
 
-  // Cliente principal (primer registro) para mostrar nombre y documento
   clientePrincipal = computed(() => this.clientes()[0] ?? null);
 
-  // Deuda total sumada de todas las cuentas
   deudaTotal = computed(() =>
     this.clientes().reduce((sum, c) => sum + (c.deuda_total ?? 0), 0)
   );
 
-  // Estado: ACTIVO si al menos una cuenta está activa
   estadoGeneral = computed(() =>
     this.clientes().some((c) => c.estado === 'ACTIVO') ? 'ACTIVO' : 'INACTIVO'
   );
 
-  serviciosColumns = computed(() =>
-    this.servicios().length > 0 ? Object.keys(this.servicios()[0]) : []
-  );
   atencionesColumns = computed(() =>
     this.atenciones().length > 0 ? Object.keys(this.atenciones()[0]) : []
   );
@@ -90,45 +78,62 @@ export class DashboardComponent implements OnInit {
     );
   });
 
+  // Contadores por estado para el resumen
+  serviciosActivos = computed(() =>
+    this.servicios().filter((s) => s.Estado === 'ACTIVO').length
+  );
+  serviciosRetirados = computed(() =>
+    this.servicios().filter((s) => s.Estado === 'RETIRADO').length
+  );
+
   ngOnInit(): void {
-    this.cuentaSeleccionada.set(this.clientes()[0]);
-    this.cargarServicios();
+    const primera = this.clientes()[0];
+    if (primera) {
+      this.cuentaSeleccionada.set(primera);
+      this.cargarServicios(primera.codigo);
+    }
   }
 
-  // Selecciona una cuenta para verla en detalle
   seleccionarCuenta(cuenta: Cliente): void {
+    if (this.cuentaSeleccionada()?.codigo === cuenta.codigo) return;
     this.cuentaSeleccionada.set(cuenta);
+    this.resetDatos();
+    this.activeTab.set('servicios');
+    this.cargarServicios(cuenta.codigo);
   }
 
   setTab(tab: ActiveTab): void {
     this.activeTab.set(tab);
     this.facturaDetalle.set(null);
     this.errorDetalle.set(null);
-    if (tab === 'atenciones' && !this.atencionesLoaded) this.cargarAtenciones();
-    if (tab === 'facturas' && !this.facturasLoaded) this.cargarFacturas();
+
+    const codigo = this.cuentaSeleccionada()?.codigo;
+    if (!codigo) return;
+
+    if (tab === 'atenciones' && this.atenciones().length === 0 && !this.loadingAtenciones()) {
+      this.cargarAtenciones(codigo);
+    }
+    if (tab === 'facturas' && this.facturas().length === 0 && !this.loadingFacturas()) {
+      this.cargarFacturas(codigo);
+    }
   }
 
   verDetalle(factura: DatosGenericos): void {
     const id =
-      factura['codigo'] ??
-      factura['id'] ??
-      factura['numero_factura'] ??
-      factura['numero'];
+      factura['codigo'] ?? factura['id'] ??
+      factura['numero_factura'] ?? factura['numero'];
 
     if (!id) {
       this.errorDetalle.set('No se pudo obtener el ID de esta factura.');
       return;
     }
-
     this.loadingDetalle.set(true);
     this.facturaDetalle.set(null);
     this.errorDetalle.set(null);
 
     this.api.getFacturaDetalle(String(id)).subscribe({
       next: (res) => {
-        const data = Array.isArray(res.resultado)
-          ? res.resultado[0]
-          : res.resultado;
+        const data = Array.isArray(res.resultado) ? res.resultado[0] : res.resultado;
         this.facturaDetalle.set(data);
         this.loadingDetalle.set(false);
       },
@@ -144,13 +149,19 @@ export class DashboardComponent implements OnInit {
     this.errorDetalle.set(null);
   }
 
-  private cargarServicios(): void {
-    if (this.serviciosLoaded) return;
+  // ─── Carga de datos ──────────────────────────────────────────────────────────
+
+  private cargarServicios(codigoCuenta: string): void {
     this.loadingServicios.set(true);
-    this.api.getServicios(this.cedula()).subscribe({
+    this.errorServicios.set(null);
+
+    this.api.getServicios(codigoCuenta).subscribe({
       next: (res) => {
-        this.servicios.set(this.toArray(res.resultado));
-        this.serviciosLoaded = true;
+        // ✅ Lee res.servicios, no res.resultado
+        const lista = Array.isArray(res.servicios)
+          ? res.servicios.filter(Boolean)
+          : [];
+        this.servicios.set(lista);
         this.loadingServicios.set(false);
       },
       error: (err: Error) => {
@@ -160,13 +171,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private cargarAtenciones(): void {
-    if (this.atencionesLoaded) return;
+  private cargarAtenciones(codigoCuenta: string): void {
     this.loadingAtenciones.set(true);
-    this.api.getAtenciones(this.cedula()).subscribe({
+    this.errorAtenciones.set(null);
+
+    this.api.getAtenciones(codigoCuenta).subscribe({
       next: (res) => {
         this.atenciones.set(this.toArray(res.resultado));
-        this.atencionesLoaded = true;
         this.loadingAtenciones.set(false);
       },
       error: (err: Error) => {
@@ -176,13 +187,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private cargarFacturas(): void {
-    if (this.facturasLoaded) return;
+  private cargarFacturas(codigoCuenta: string): void {
     this.loadingFacturas.set(true);
-    this.api.getFacturas(this.cedula()).subscribe({
+    this.errorFacturas.set(null);
+
+    this.api.getFacturas(codigoCuenta).subscribe({
       next: (res) => {
         this.facturas.set(this.toArray(res.resultado));
-        this.facturasLoaded = true;
         this.loadingFacturas.set(false);
       },
       error: (err: Error) => {
@@ -190,6 +201,17 @@ export class DashboardComponent implements OnInit {
         this.loadingFacturas.set(false);
       },
     });
+  }
+
+  private resetDatos(): void {
+    this.servicios.set([]);
+    this.atenciones.set([]);
+    this.facturas.set([]);
+    this.facturaDetalle.set(null);
+    this.errorServicios.set(null);
+    this.errorAtenciones.set(null);
+    this.errorFacturas.set(null);
+    this.errorDetalle.set(null);
   }
 
   private toArray(resultado: any): DatosGenericos[] {
