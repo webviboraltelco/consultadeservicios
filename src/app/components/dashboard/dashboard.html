@@ -1,10 +1,10 @@
+<!-- src/app/components/dashboard/dashboard.html -->
 <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
 
   <!-- ===== TARJETA RESUMEN DEL CLIENTE ===== -->
   @if (clientePrincipal()) {
   <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 1px 4px rgba(0,0,0,0.06)">
     <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem">
-
       <div style="display:flex; align-items:center; gap:1rem">
         <div style="width:56px; height:56px; border-radius:50%; background-color:#2563eb; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:1.5rem; font-weight:700; flex-shrink:0; text-transform:uppercase">
           {{ clientePrincipal()!.nombres.charAt(0) }}
@@ -13,36 +13,30 @@
           <p style="font-size:1.125rem; font-weight:700; color:#1f2937; margin:0 0 0.25rem">
             {{ clientePrincipal()!.nombres }}
           </p>
-          <p style="font-size:0.8125rem; color:#6b7280; margin:0 0 0.125rem">
+          <p style="font-size:0.8125rem; color:#6b7280; margin:0">
             CC: {{ clientePrincipal()!.documento_identidad }}
           </p>
         </div>
       </div>
-
       <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap">
         <span
           style="display:inline-block; padding:0.25rem 0.875rem; border-radius:9999px; font-size:0.6875rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em"
           [style.background-color]="estadoGeneral() === 'ACTIVO' ? '#dcfce7' : '#fee2e2'"
           [style.color]="estadoGeneral() === 'ACTIVO' ? '#15803d' : '#b91c1c'"
-        >
-          {{ estadoGeneral() }}
-        </span>
+        >{{ estadoGeneral() }}</span>
         <div style="text-align:right">
           <p style="font-size:0.6875rem; color:#9ca3af; margin:0 0 0.125rem">Saldo total pendiente</p>
-          <p
-            style="font-size:1.25rem; font-weight:700; margin:0"
-            [style.color]="deudaTotal() > 0 ? '#dc2626' : '#16a34a'"
-          >
+          <p style="font-size:1.25rem; font-weight:700; margin:0"
+             [style.color]="deudaTotal() > 0 ? '#dc2626' : '#16a34a'">
             ${{ deudaTotal() | number: '1.2-2' }}
           </p>
         </div>
       </div>
-
     </div>
   </div>
   }
 
-  <!-- ===== CUENTAS / DIRECCIONES ===== -->
+  <!-- ===== CUENTAS ===== -->
   @if (clientes().length > 1) {
   <div style="margin-bottom:1.5rem">
     <p style="font-size:0.8125rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.75rem">
@@ -52,22 +46,16 @@
       @for (cuenta of clientes(); track cuenta.codigo) {
         <div
           (click)="seleccionarCuenta(cuenta)"
-          style="background:#ffffff; border-radius:1rem; padding:1rem; cursor:pointer; transition:all 0.15s; box-shadow:0 1px 3px rgba(0,0,0,0.06)"
+          style="background:#ffffff; border-radius:1rem; padding:1rem; cursor:pointer; transition:all 0.15s"
           [style.border]="cuentaSeleccionada()?.codigo === cuenta.codigo ? '2px solid #3b82f6' : '1px solid #e5e7eb'"
           [style.box-shadow]="cuentaSeleccionada()?.codigo === cuenta.codigo ? '0 0 0 3px #bfdbfe' : '0 1px 3px rgba(0,0,0,0.06)'"
         >
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem">
             <div style="flex:1; min-width:0">
-              <p style="font-size:0.8125rem; font-weight:600; color:#1f2937; margin:0 0 0.375rem">
-                Cód. {{ cuenta.codigo }}
-              </p>
-              <p style="font-size:0.75rem; color:#6b7280; margin:0 0 0.5rem; line-height:1.4; word-break:break-word">
-                📍 {{ cuenta.direccion }}
-              </p>
-              <p
-                style="font-size:0.8125rem; font-weight:600; margin:0"
-                [style.color]="cuenta.deuda_total > 0 ? '#dc2626' : '#16a34a'"
-              >
+              <p style="font-size:0.8125rem; font-weight:600; color:#1f2937; margin:0 0 0.375rem">Cód. {{ cuenta.codigo }}</p>
+              <p style="font-size:0.75rem; color:#6b7280; margin:0 0 0.5rem; line-height:1.4; word-break:break-word">📍 {{ cuenta.direccion }}</p>
+              <p style="font-size:0.8125rem; font-weight:600; margin:0"
+                 [style.color]="cuenta.deuda_total > 0 ? '#dc2626' : '#16a34a'">
                 Deuda: ${{ cuenta.deuda_total | number: '1.2-2' }}
               </p>
             </div>
@@ -75,14 +63,10 @@
               style="display:inline-block; padding:0.25rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:700; text-transform:uppercase; flex-shrink:0"
               [style.background-color]="cuenta.estado === 'ACTIVO' ? '#dcfce7' : '#fee2e2'"
               [style.color]="cuenta.estado === 'ACTIVO' ? '#15803d' : '#b91c1c'"
-            >
-              {{ cuenta.estado }}
-            </span>
+            >{{ cuenta.estado }}</span>
           </div>
           @if (cuentaSeleccionada()?.codigo === cuenta.codigo) {
-            <p style="font-size:0.6875rem; color:#2563eb; font-weight:600; margin:0.625rem 0 0">
-              ✓ Seleccionada
-            </p>
+            <p style="font-size:0.6875rem; color:#2563eb; font-weight:600; margin:0.625rem 0 0">✓ Seleccionada</p>
           }
         </div>
       }
@@ -90,7 +74,6 @@
   </div>
   }
 
-  <!-- Si solo hay una cuenta muestra su dirección como banner -->
   @if (clientes().length === 1) {
   <div style="background-color:#f0f9ff; border:1px solid #bae6fd; border-radius:0.75rem; padding:0.875rem 1rem; margin-bottom:1.5rem">
     <p style="font-size:0.8125rem; color:#0369a1; margin:0">
@@ -99,10 +82,9 @@
   </div>
   }
 
-  <!-- ===== PANEL DE TABS ===== -->
+  <!-- ===== TABS ===== -->
   <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:1rem; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06)">
 
-    <!-- Navegación de pestañas -->
     <div style="display:flex; border-bottom:1px solid #e5e7eb; overflow-x:auto">
       @for (tab of tabs; track tab.id) {
         <button
@@ -111,26 +93,21 @@
           [style.border-bottom-color]="activeTab() === tab.id ? '#3b82f6' : 'transparent'"
           [style.color]="activeTab() === tab.id ? '#2563eb' : '#6b7280'"
           [style.background-color]="activeTab() === tab.id ? '#eff6ff' : 'transparent'"
-        >
-          {{ tab.icon }} {{ tab.label }}
-        </button>
+        >{{ tab.icon }} {{ tab.label }}</button>
       }
     </div>
 
     <div style="padding:1.5rem">
 
-      <!-- ===================================================
-           TAB: SERVICIOS — usa el nuevo endpoint con codigo
-      ==================================================== -->
+      <!-- ===================== TAB SERVICIOS ===================== -->
       @if (activeTab() === 'servicios') {
 
         @if (loadingServicios()) {
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
-            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
+            <div class="spinner" style="border-color:#3b82f6; border-top-color:transparent"></div>
             <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando servicios...</p>
           </div>
         }
-
         @else if (errorServicios()) {
           <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
             <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
@@ -138,7 +115,6 @@
             <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorServicios() }}</p>
           </div>
         }
-
         @else if (servicios().length === 0) {
           <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
             <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
@@ -146,112 +122,82 @@
             <p style="font-size:0.8125rem; margin:0">No hay servicios para esta cuenta</p>
           </div>
         }
-
         @else {
-
-          <!-- Indicador de la cuenta consultada -->
           <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem">
-            <span style="font-size:1rem">📍</span>
+            <span>📍</span>
             <p style="font-size:0.8125rem; color:#0369a1; margin:0">
-              <strong>{{ cuentaSeleccionada()?.direccion }}</strong>
-              &nbsp;·&nbsp; Cód. {{ cuentaSeleccionada()?.codigo }}
+              <strong>{{ cuentaSeleccionada()?.direccion }}</strong> &nbsp;·&nbsp; Cód. {{ cuentaSeleccionada()?.codigo }}
             </p>
           </div>
 
-          <!-- Resumen de contadores -->
           <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; flex-wrap:wrap">
             <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
-              <span style="font-size:1.125rem">✅</span>
+              <span>✅</span>
               <div>
-                <p style="font-size:0.625rem; color:#15803d; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Activos</p>
+                <p style="font-size:0.625rem; color:#15803d; margin:0; font-weight:700; text-transform:uppercase">Activos</p>
                 <p style="font-size:1.375rem; font-weight:700; color:#15803d; margin:0; line-height:1">{{ serviciosActivos() }}</p>
               </div>
             </div>
             <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
-              <span style="font-size:1.125rem">⛔</span>
+              <span>⛔</span>
               <div>
-                <p style="font-size:0.625rem; color:#b91c1c; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Retirados</p>
+                <p style="font-size:0.625rem; color:#b91c1c; margin:0; font-weight:700; text-transform:uppercase">Retirados</p>
                 <p style="font-size:1.375rem; font-weight:700; color:#b91c1c; margin:0; line-height:1">{{ serviciosRetirados() }}</p>
               </div>
             </div>
             <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
-              <span style="font-size:1.125rem">📋</span>
+              <span>📋</span>
               <div>
-                <p style="font-size:0.625rem; color:#1d4ed8; margin:0; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Total</p>
+                <p style="font-size:0.625rem; color:#1d4ed8; margin:0; font-weight:700; text-transform:uppercase">Total</p>
                 <p style="font-size:1.375rem; font-weight:700; color:#1d4ed8; margin:0; line-height:1">{{ servicios().length }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Tarjetas de servicios -->
           <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:0.875rem">
             @for (srv of servicios(); track srv.idServicio) {
               <div
                 style="background:#ffffff; border-radius:1rem; padding:1.25rem; border:1px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.06)"
                 [style.border-left]="srv.Estado === 'ACTIVO' ? '4px solid #22c55e' : '4px solid #ef4444'"
               >
-                <!-- Header -->
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.875rem">
                   <div style="flex:1; min-width:0; margin-right:0.5rem">
-                    <p style="font-size:0.9375rem; font-weight:700; color:#1f2937; margin:0 0 0.25rem; line-height:1.3">
-                      {{ srv.NombreServicio }}
-                    </p>
-                    <p style="font-size:0.75rem; color:#9ca3af; margin:0">
-                      ID: {{ srv.idServicio }}
-                    </p>
+                    <p style="font-size:0.9375rem; font-weight:700; color:#1f2937; margin:0 0 0.25rem; line-height:1.3">{{ srv.NombreServicio }}</p>
+                    <p style="font-size:0.75rem; color:#9ca3af; margin:0">ID: {{ srv.idServicio }}</p>
                   </div>
                   <span
                     style="display:inline-block; padding:0.25rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:700; text-transform:uppercase; flex-shrink:0"
                     [style.background-color]="srv.Estado === 'ACTIVO' ? '#dcfce7' : '#fee2e2'"
                     [style.color]="srv.Estado === 'ACTIVO' ? '#15803d' : '#b91c1c'"
-                  >
-                    {{ srv.Estado }}
-                  </span>
+                  >{{ srv.Estado }}</span>
                 </div>
-
-                <!-- Separador -->
                 <div style="height:1px; background:#f3f4f6; margin:0 0 0.875rem"></div>
-
-                <!-- Tarifa -->
                 <div style="margin-bottom:0.75rem">
-                  <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.25rem; font-weight:600">
-                    Plan / Tarifa
-                  </p>
-                  <p style="font-size:0.8125rem; color:#374151; font-weight:500; margin:0; line-height:1.4">
-                    {{ srv.Tarifa }}
-                  </p>
+                  <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.25rem; font-weight:600">Plan / Tarifa</p>
+                  <p style="font-size:0.8125rem; color:#374151; font-weight:500; margin:0">{{ srv.Tarifa }}</p>
                 </div>
-
-                <!-- Precio -->
                 <div style="background:#f9fafb; border-radius:0.625rem; padding:0.625rem 0.875rem; display:flex; justify-content:space-between; align-items:center">
                   <p style="font-size:0.75rem; color:#6b7280; margin:0">Precio tarifa</p>
-                  <p
-                    style="font-size:1rem; font-weight:700; margin:0"
-                    [style.color]="srv.PrecioTarifa > 0 ? '#1d4ed8' : '#6b7280'"
-                  >
+                  <p style="font-size:1rem; font-weight:700; margin:0"
+                     [style.color]="srv.PrecioTarifa > 0 ? '#1d4ed8' : '#6b7280'">
                     {{ srv.PrecioTarifa > 0 ? ('$' + (srv.PrecioTarifa | number:'1.0-0')) : 'Incluido' }}
                   </p>
                 </div>
-
               </div>
             }
           </div>
-
         }
       }
 
-      <!-- ===================================================
-           TAB: ATENCIONES
-      ==================================================== -->
+      <!-- ===================== TAB ATENCIONES ===================== -->
       @if (activeTab() === 'atenciones') {
 
         @if (loadingAtenciones()) {
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
-            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
+            <div class="spinner" style="border-color:#f59e0b; border-top-color:transparent"></div>
             <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando atenciones...</p>
           </div>
         }
-
         @else if (errorAtenciones()) {
           <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
             <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
@@ -259,151 +205,362 @@
             <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorAtenciones() }}</p>
           </div>
         }
-
         @else if (atenciones().length === 0) {
           <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
-            <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
+            <div style="font-size:3rem; margin-bottom:0.75rem">🛠️</div>
             <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin atenciones registradas</p>
             <p style="font-size:0.8125rem; margin:0">No hay historial de atenciones para esta cuenta</p>
           </div>
         }
-
         @else {
-          <div style="overflow-x:auto; border-radius:0.75rem; border:1px solid #f3f4f6">
-            <table style="width:100%; border-collapse:collapse; font-size:0.875rem">
-              <thead>
-                <tr style="background-color:#f9fafb; border-bottom:1px solid #e5e7eb">
-                  @for (col of atencionesColumns(); track col) {
-                    <th style="padding:0.75rem 1rem; text-align:left; font-size:0.6875rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap">
-                      {{ formatLabel(col) }}
-                    </th>
-                  }
-                </tr>
-              </thead>
-              <tbody>
-                @for (row of atenciones(); track $index) {
-                  <tr style="border-bottom:1px solid #f3f4f6">
-                    @for (col of atencionesColumns(); track col) {
-                      <td style="padding:0.75rem 1rem; color:#374151; white-space:nowrap">
-                        {{ formatValue(row[col]) }}
-                      </td>
-                    }
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem">
+            <span>📍</span>
+            <p style="font-size:0.8125rem; color:#92400e; margin:0">
+              <strong>{{ cuentaSeleccionada()?.direccion }}</strong> &nbsp;·&nbsp; Cód. {{ cuentaSeleccionada()?.codigo }}
+            </p>
           </div>
-          <p style="font-size:0.75rem; color:#9ca3af; margin:0.75rem 0 0">{{ atenciones().length }} registro(s)</p>
-        }
-      }
 
-      <!-- ===================================================
-           TAB: FACTURAS
-      ==================================================== -->
-      @if (activeTab() === 'facturas') {
-
-        @if (loadingFacturas()) {
-          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
-            <div style="width:2.5rem; height:2.5rem; border:4px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
-            <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando facturas...</p>
-          </div>
-        }
-
-        @else if (errorFacturas()) {
-          <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
-            <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
-            <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Error al cargar facturas</p>
-            <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorFacturas() }}</p>
-          </div>
-        }
-
-        @else if (facturas().length === 0) {
-          <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
-            <div style="font-size:3rem; margin-bottom:0.75rem">📭</div>
-            <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin facturas registradas</p>
-            <p style="font-size:0.8125rem; margin:0">No hay historial de facturación para esta cuenta</p>
-          </div>
-        }
-
-        @else {
-          <div style="overflow-x:auto; border-radius:0.75rem; border:1px solid #f3f4f6">
-            <table style="width:100%; border-collapse:collapse; font-size:0.875rem">
-              <thead>
-                <tr style="background-color:#f9fafb; border-bottom:1px solid #e5e7eb">
-                  @for (col of facturasColumns(); track col) {
-                    <th style="padding:0.75rem 1rem; text-align:left; font-size:0.6875rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap">
-                      {{ formatLabel(col) }}
-                    </th>
-                  }
-                  <th style="padding:0.75rem 1rem; text-align:left; font-size:0.6875rem; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.06em">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (row of facturas(); track $index) {
-                  <tr style="border-bottom:1px solid #f3f4f6">
-                    @for (col of facturasColumns(); track col) {
-                      <td style="padding:0.75rem 1rem; color:#374151; white-space:nowrap">
-                        {{ formatValue(row[col]) }}
-                      </td>
-                    }
-                    <td style="padding:0.75rem 1rem">
-                      <button
-                        (click)="verDetalle(row)"
-                        style="background-color:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; font-size:0.75rem; font-weight:600; padding:0.375rem 0.75rem; border-radius:0.5rem; cursor:pointer; font-family:inherit"
-                      >
-                        📄 Ver detalle
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-          <p style="font-size:0.75rem; color:#9ca3af; margin:0.75rem 0 0">{{ facturas().length }} factura(s)</p>
-
-          @if (loadingDetalle()) {
-            <div style="display:flex; align-items:center; gap:0.75rem; padding:2rem; margin-top:1rem; border-top:1px solid #f3f4f6; justify-content:center">
-              <div style="width:1.5rem; height:1.5rem; border:3px solid #3b82f6; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite"></div>
-              <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando detalle...</p>
-            </div>
-          }
-
-          @if (errorDetalle()) {
-            <div style="margin-top:1rem; padding:1rem; background:#fef2f2; border-radius:0.75rem; display:flex; gap:0.5rem">
-              <span>❌</span>
-              <p style="font-size:0.875rem; color:#dc2626; margin:0">{{ errorDetalle() }}</p>
-            </div>
-          }
-
-          @if (facturaDetalle()) {
-            <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #f3f4f6">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-                <p style="font-size:1rem; font-weight:600; color:#374151; margin:0">🧾 Detalle de Factura</p>
-                <button
-                  (click)="cerrarDetalle()"
-                  style="background:none; border:none; font-size:1.5rem; color:#9ca3af; cursor:pointer; width:2rem; height:2rem; border-radius:50%; display:flex; align-items:center; justify-content:center; line-height:1"
-                >×</button>
+          <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; flex-wrap:wrap">
+            <div style="background:#fef9c3; border:1px solid #fde047; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span>⏳</span>
+              <div>
+                <p style="font-size:0.625rem; color:#854d0e; margin:0; font-weight:700; text-transform:uppercase">Abiertas</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#854d0e; margin:0; line-height:1">{{ atencionesAbiertas() }}</p>
               </div>
-              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:0.75rem">
-                @for (entry of facturaDetalleEntries(); track entry[0]) {
-                  <div style="background:#f9fafb; border:1px solid #f3f4f6; border-radius:0.75rem; padding:0.75rem">
-                    <p style="font-size:0.6875rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.25rem">
-                      {{ formatLabel(entry[0]) }}
-                    </p>
-                    <p style="font-size:0.875rem; font-weight:500; color:#1f2937; margin:0; word-break:break-all">
-                      {{ formatValue(entry[1]) }}
-                    </p>
+            </div>
+            <div style="background:#dcfce7; border:1px solid #86efac; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span>✅</span>
+              <div>
+                <p style="font-size:0.625rem; color:#15803d; margin:0; font-weight:700; text-transform:uppercase">Cerradas</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#15803d; margin:0; line-height:1">{{ atencionesCerradas() }}</p>
+              </div>
+            </div>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:0.75rem; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.625rem">
+              <span>📋</span>
+              <div>
+                <p style="font-size:0.625rem; color:#1d4ed8; margin:0; font-weight:700; text-transform:uppercase">Total</p>
+                <p style="font-size:1.375rem; font-weight:700; color:#1d4ed8; margin:0; line-height:1">{{ atenciones().length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.875rem">
+            @for (atencion of atenciones(); track $index) {
+              <div
+                style="background:#ffffff; border-radius:1rem; border:1px solid #e5e7eb; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06)"
+                [style.border-left]="'4px solid ' + getAtencionEstadoColor(getAtencionEstado(atencion)).border"
+              >
+                <!-- Header -->
+                <div style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem">
+                  <div style="display:flex; align-items:center; gap:0.75rem; flex:1; min-width:0">
+                    <div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; background:#fff7ed; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0">🛠️</div>
+                    <div style="min-width:0">
+                      <p style="font-size:0.9375rem; font-weight:700; color:#1f2937; margin:0 0 0.125rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">
+                        {{ getAtencionTipo(atencion) }}
+                      </p>
+                      <p style="font-size:0.75rem; color:#9ca3af; margin:0">Ref. #{{ getAtencionNumero(atencion) }}</p>
+                    </div>
                   </div>
-                }
+                  <span
+                    style="display:inline-block; padding:0.3rem 0.75rem; border-radius:9999px; font-size:0.625rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; flex-shrink:0; border:1px solid"
+                    [style.background-color]="getAtencionEstadoColor(getAtencionEstado(atencion)).bg"
+                    [style.color]="getAtencionEstadoColor(getAtencionEstado(atencion)).text"
+                    [style.border-color]="getAtencionEstadoColor(getAtencionEstado(atencion)).border"
+                  >{{ getAtencionEstado(atencion) }}</span>
+                </div>
+
+                <div style="height:1px; background:#f3f4f6; margin:0 1.25rem"></div>
+
+                <!-- Cuerpo -->
+                <div style="padding:0.875rem 1.25rem">
+                  @if (getAtencionDescripcion(atencion)) {
+                    <p style="font-size:0.8125rem; color:#374151; margin:0 0 0.875rem; line-height:1.5; background:#f9fafb; border-radius:0.5rem; padding:0.5rem 0.75rem; border-left:3px solid #e5e7eb">
+                      💬 {{ getAtencionDescripcion(atencion) }}
+                    </p>
+                  }
+                  @if (getAtencionMotivo(atencion)) {
+                    <p style="font-size:0.8125rem; color:#dc2626; font-weight:600; margin:0 0 0.875rem">
+                      ⚠️ {{ getAtencionMotivo(atencion) }}
+                    </p>
+                  }
+
+                  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.75rem">
+                    <div>
+                      <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.125rem; font-weight:600">📅 Fecha Registro</p>
+                      <p style="font-size:0.8125rem; font-weight:500; color:#374151; margin:0">{{ getAtencionFecha(atencion) }}</p>
+                    </div>
+                    @if (getAtencionFechaProgramacion(atencion)) {
+                      <div>
+                        <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.125rem; font-weight:600">🗓️ Fecha Programación</p>
+                        <p style="font-size:0.8125rem; font-weight:500; color:#374151; margin:0">{{ getAtencionFechaProgramacion(atencion) }}</p>
+                      </div>
+                    }
+                    @if (getAtencionTecnico(atencion)) {
+                      <div>
+                        <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.125rem; font-weight:600">👷 Técnico Asignado</p>
+                        <p style="font-size:0.8125rem; font-weight:600; color:#1d4ed8; margin:0">{{ getAtencionTecnico(atencion) }}</p>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Campos extra — sin @let, llamada directa al método -->
+                  @if (getAtencionExtras(atencion).length > 0) {
+                    <div style="margin-top:0.875rem; padding-top:0.75rem; border-top:1px solid #f3f4f6">
+                      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:0.5rem">
+                        @for (extra of getAtencionExtras(atencion); track extra.label) {
+                          <div style="background:#f9fafb; border-radius:0.5rem; padding:0.5rem 0.625rem">
+                            <p style="font-size:0.5625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.125rem; font-weight:600">{{ extra.label }}</p>
+                            <p style="font-size:0.75rem; font-weight:500; color:#1f2937; margin:0; word-break:break-word">{{ extra.value }}</p>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
+
+          <p style="font-size:0.75rem; color:#9ca3af; margin:0.75rem 0 0">
+            {{ atenciones().length }} atención(es) registrada(s)
+          </p>
         }
       }
 
-    </div>
-  </div>
+ <!-- ===================== TAB FACTURAS ===================== -->
 
-</div>
+
+  @if (loadingFacturas()) {
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1rem; gap:0.75rem">
+      <div class="spinner" style="border-color:#8b5cf6; border-top-color:transparent"></div>
+      <p style="font-size:0.875rem; color:#9ca3af; margin:0">Cargando facturas...</p>
+    </div>
+  }
+
+  @else if (errorFacturas()) {
+    <div style="text-align:center; padding:2.5rem 1rem; background:#fef2f2; border-radius:0.75rem">
+      <div style="font-size:2rem; margin-bottom:0.5rem">❌</div>
+      <p style="color:#dc2626; font-weight:600; margin:0 0 0.25rem">Error al cargar facturas</p>
+      <p style="color:#ef4444; font-size:0.8125rem; margin:0">{{ errorFacturas() }}</p>
+    </div>
+  }
+
+  @else if (facturas().length === 0) {
+    <div style="text-align:center; padding:4rem 1rem; color:#9ca3af">
+      <div style="font-size:3rem; margin-bottom:0.75rem">🧾</div>
+      <p style="font-weight:500; color:#6b7280; margin:0 0 0.25rem">Sin facturas registradas</p>
+      <p style="font-size:0.8125rem; margin:0">No hay facturas para esta cuenta</p>
+    </div>
+  }
+
+  
+
+    <!-- Banner cuenta -->
+    <div style="background:#f5f3ff; border:1px solid #ddd6fe; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem">
+      <span>📍</span>
+      <p style="font-size:0.8125rem; color:#6d28d9; margin:0">
+        <strong>{{ cuentaSeleccionada()?.direccion }}</strong>
+        &nbsp;·&nbsp; Cód. {{ cuentaSeleccionada()?.codigo }}
+      </p>
+    </div>
+
+    <!-- Error de descarga -->
+    @if (errorDescarga()) {
+      <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem">
+        <span>❌</span>
+        <p style="font-size:0.8125rem; color:#b91c1c; margin:0">{{ errorDescarga() }}</p>
+      </div>
+    }
+
+    <!-- Lista de facturas -->
+    @if (!facturaDetalle()) {
+      <div style="display:flex; flex-direction:column; gap:1rem">
+        @for (factura of facturas(); track $index) {
+          <div
+            style="background:#ffffff; border:1px solid #e5e7eb; border-radius:1rem; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); transition:box-shadow 0.2s"
+            [style.border-left]="'4px solid ' + getFacturaEstadoColor(getFacturaEstado(factura)).dot"
+          >
+            <!-- Fila principal -->
+            <div style="padding:1rem 1.25rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.875rem">
+
+              <!-- Ícono + info -->
+              <div style="display:flex; align-items:center; gap:0.875rem; flex:1; min-width:0">
+                <div style="width:3rem; height:3rem; border-radius:0.875rem; background:linear-gradient(135deg,#7c3aed,#a855f7); display:flex; align-items:center; justify-content:center; font-size:1.375rem; flex-shrink:0; box-shadow:0 2px 8px rgba(124,58,237,0.3)">
+                  🧾
+                </div>
+                <div style="min-width:0">
+                  <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.25rem">
+                    <p style="font-size:0.9375rem; font-weight:700; color:#1f2937; margin:0">
+                      Factura N° {{ getFacturaNumero(factura) }}
+                    </p>
+                    <!-- Badge estado -->
+                    <span
+                      style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:700; text-transform:uppercase; border:1px solid"
+                      [style.background-color]="getFacturaEstadoColor(getFacturaEstado(factura)).bg"
+                      [style.color]="getFacturaEstadoColor(getFacturaEstado(factura)).text"
+                      [style.border-color]="getFacturaEstadoColor(getFacturaEstado(factura)).border"
+                    >
+                      <span
+                        style="width:6px; height:6px; border-radius:50%; display:inline-block"
+                        [style.background-color]="getFacturaEstadoColor(getFacturaEstado(factura)).dot"
+                      ></span>
+                      {{ getFacturaEstado(factura) }}
+                    </span>
+                  </div>
+                  <!-- Periodo y fecha -->
+                  <div style="display:flex; flex-wrap:wrap; gap:0.875rem">
+                    @if (getFacturaPeriodo(factura)) {
+                      <p style="font-size:0.75rem; color:#6b7280; margin:0">
+                        📅 Período: <strong>{{ getFacturaPeriodo(factura) }}</strong>
+                      </p>
+                    }
+                    <p style="font-size:0.75rem; color:#6b7280; margin:0">
+                      Emisión: {{ getFacturaFecha(factura) }}
+                    </p>
+                    @if (getFacturaVencimiento(factura) !== '—') {
+                      <p style="font-size:0.75rem; color:#6b7280; margin:0">
+                        Vence: <span
+                          [style.color]="getFacturaEstado(factura) === 'VENCIDA' ? '#dc2626' : '#6b7280'"
+                          [style.font-weight]="getFacturaEstado(factura) === 'VENCIDA' ? '700' : 'normal'"
+                        >{{ getFacturaVencimiento(factura) }}</span>
+                      </p>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total + acciones -->
+              <div style="display:flex; align-items:center; gap:0.875rem; flex-shrink:0; flex-wrap:wrap">
+                <!-- Total -->
+                <div style="text-align:right">
+                  <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 0.125rem">Total</p>
+                  <p style="font-size:1.25rem; font-weight:700; margin:0"
+                     [style.color]="getFacturaEstado(factura) === 'PAGADA' ? '#16a34a' : getFacturaEstado(factura) === 'VENCIDA' ? '#dc2626' : '#1d4ed8'">
+                    ${{ getFacturaTotal(factura) | number:'1.2-2' }}
+                  </p>
+                </div>
+
+                <!-- Botones -->
+                <div style="display:flex; flex-direction:column; gap:0.5rem">
+
+                  <!-- Botón Ver detalle -->
+                  <button
+                    (click)="verDetalle(factura)"
+                    style="display:flex; align-items:center; gap:0.375rem; padding:0.5rem 0.875rem; border-radius:0.625rem; border:1px solid #e5e7eb; background:#f9fafb; font-size:0.75rem; font-weight:600; color:#374151; cursor:pointer; font-family:inherit; transition:all 0.15s; white-space:nowrap"
+                  >
+                    🔍 Ver detalle
+                  </button>
+
+                  <!-- Botón Descargar — el más llamativo -->
+                  <button
+                    (click)="descargarFactura(factura)"
+                    [disabled]="descargandoFactura() === getFacturaId(factura)"
+                    style="display:flex; align-items:center; justify-content:center; gap:0.375rem; padding:0.5rem 0.875rem; border-radius:0.625rem; border:none; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; white-space:nowrap; min-width:130px"
+                    [style.background]="descargaExitosa() === getFacturaId(factura)
+                      ? 'linear-gradient(135deg, #16a34a, #22c55e)'
+                      : descargandoFactura() === getFacturaId(factura)
+                      ? '#9ca3af'
+                      : 'linear-gradient(135deg, #7c3aed, #a855f7)'"
+                    [style.color]="'#ffffff'"
+                    [style.box-shadow]="descargandoFactura() === getFacturaId(factura) ? 'none' : '0 4px 12px rgba(124,58,237,0.35)'"
+                    [style.opacity]="descargandoFactura() === getFacturaId(factura) ? '0.8' : '1'"
+                  >
+                    @if (descargandoFactura() === getFacturaId(factura)) {
+                      <span class="spinner-sm"></span>
+                      Descargando...
+                    } @else if (descargaExitosa() === getFacturaId(factura)) {
+                      ✅ ¡Descargado!
+                    } @else {
+                      ⬇️ Descargar PDF
+                    }
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <p style="font-size:0.75rem; color:#9ca3af; margin:0.875rem 0 0">
+        {{ facturas().length }} factura(s) registrada(s)
+      </p>
+    }
+
+    <!-- ── Detalle de factura ── -->
+    @if (facturaDetalle()) {
+  <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:1rem; overflow:hidden">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#7c3aed,#a855f7); padding:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem">
+      <div>
+        <p style="font-size:0.75rem; color:rgba(255,255,255,0.75); margin:0 0 0.25rem; text-transform:uppercase; letter-spacing:0.06em; font-weight:600">Detalle de Factura</p>
+        <p style="font-size:1.125rem; font-weight:700; color:#ffffff; margin:0">
+          N° {{ getFacturaNumero(facturaDetalle()!) }}
+        </p>
+      </div>
+      <div style="display:flex; gap:0.625rem; align-items:center; flex-wrap:wrap">
+        <button
+          (click)="descargarFactura(facturaDetalle()!)"
+          [disabled]="descargandoFactura() !== null"
+          style="display:flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; border-radius:0.625rem; border:2px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.15); color:#fff; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap"
+        >
+          @if (descargandoFactura() !== null) {
+            <span class="spinner-sm"></span> Generando...
+          } @else {
+            ⬇️ Descargar PDF
+          }
+        </button>
+        <button
+          (click)="cerrarDetalle()"
+          style="display:flex; align-items:center; gap:0.25rem; padding:0.5rem 1rem; border-radius:0.625rem; border:none; background:rgba(255,255,255,0.2); color:#fff; font-size:0.75rem; font-weight:600; cursor:pointer; font-family:inherit"
+        >
+          ← Volver
+        </button>
+      </div>
+    </div>
+
+    <!-- Resumen visual -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); border-bottom:1px solid #e5e7eb">
+      <div style="padding:1rem; text-align:center; border-right:1px solid #e5e7eb">
+        <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 0.25rem">Estado</p>
+        <span
+          style="display:inline-block; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:700; text-transform:uppercase"
+          [style.background-color]="getFacturaEstadoColor(getFacturaEstado(facturaDetalle()!)).bg"
+          [style.color]="getFacturaEstadoColor(getFacturaEstado(facturaDetalle()!)).text"
+        >{{ getFacturaEstado(facturaDetalle()!) }}</span>
+      </div>
+      <div style="padding:1rem; text-align:center; border-right:1px solid #e5e7eb">
+        <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 0.25rem">Emisión</p>
+        <p style="font-size:0.8125rem; font-weight:600; color:#1f2937; margin:0">{{ getFacturaFecha(facturaDetalle()!) }}</p>
+      </div>
+      <div style="padding:1rem; text-align:center; border-right:1px solid #e5e7eb">
+        <p style="font-size:0.625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 0.25rem">Vencimiento</p>
+        <p style="font-size:0.8125rem; font-weight:600; margin:0"
+           [style.color]="getFacturaEstado(facturaDetalle()!) === 'VENCIDA' ? '#dc2626' : '#1f2937'">
+          {{ getFacturaVencimiento(facturaDetalle()!) }}
+        </p>
+      </div>
+      <div style="padding:1rem; text-align:center; background:linear-gradient(135deg,#f5f3ff,#ede9fe)">
+        <p style="font-size:0.625rem; color:#7c3aed; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin:0 0 0.25rem">Total</p>
+        <p style="font-size:1.25rem; font-weight:700; color:#7c3aed; margin:0">
+          ${{ getFacturaTotal(facturaDetalle()!) | number:'1.2-2' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Todos los campos -->
+    <div style="padding:1.25rem">
+      <p style="font-size:0.75rem; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.875rem">Información completa</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:0.625rem">
+        @for (entry of facturaDetalleEntries(); track entry[0]) {
+          <div style="background:#ffffff; border-radius:0.625rem; padding:0.625rem 0.875rem; border:1px solid #e5e7eb">
+            <p style="font-size:0.5625rem; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 0.25rem; font-weight:600">{{ formatLabel(entry[0]) }}</p>
+            <p style="font-size:0.8125rem; font-weight:500; color:#1f2937; margin:0; word-break:break-word">{{ formatValue(entry[1]) }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+}

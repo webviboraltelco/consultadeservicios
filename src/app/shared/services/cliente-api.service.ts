@@ -5,8 +5,11 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import {
   ApiResponse,
+  AtencionesResponse,
   Cliente,
   DatosGenericos,
+  Factura,
+  FacturaDetalle,
   ServiciosResponse,
 } from '../models/cliente.models';
 
@@ -40,7 +43,6 @@ export class ClienteApiService {
       .pipe(catchError((e) => this.handleError(e)));
   }
 
-  // ✅ Ahora retorna ServiciosResponse con el campo "servicios"
   getServicios(codigoCuenta: string): Observable<ServiciosResponse> {
     return this.http
       .get<ServiciosResponse>(
@@ -50,30 +52,40 @@ export class ClienteApiService {
       .pipe(catchError((e) => this.handleError(e)));
   }
 
-  getAtenciones(codigoCuenta: string): Observable<ApiResponse<DatosGenericos[]>> {
+  getAtenciones(codigoCuenta: string): Observable<AtencionesResponse> {
     return this.http
-      .get<ApiResponse<DatosGenericos[]>>(
+      .get<AtencionesResponse>(
         `${this.baseUrl}/cliente/${codigoCuenta}/atenciones`,
         { headers: this.headers }
       )
       .pipe(catchError((e) => this.handleError(e)));
   }
 
-  getFacturas(codigoCuenta: string): Observable<ApiResponse<DatosGenericos[]>> {
+  getFacturas(codigoCuenta: string): Observable<ApiResponse<Factura[]>> {
     return this.http
-      .get<ApiResponse<DatosGenericos[]>>(
+      .get<ApiResponse<Factura[]>>(
         `${this.baseUrl}/cliente/${codigoCuenta}/facturas`,
         { headers: this.headers }
       )
       .pipe(catchError((e) => this.handleError(e)));
   }
 
-  getFacturaDetalle(id: string): Observable<ApiResponse<DatosGenericos>> {
+  getFacturaDetalle(id: string): Observable<ApiResponse<FacturaDetalle>> {
     return this.http
-      .get<ApiResponse<DatosGenericos>>(
+      .get<ApiResponse<FacturaDetalle>>(
         `${this.baseUrl}/factura/${id}`,
         { headers: this.headers }
       )
       .pipe(catchError((e) => this.handleError(e)));
+  }
+
+  // El endpoint /factura/:id devuelve PDF directo, no JSON
+descargarFacturaPdf(idFactura: string): Observable<Blob> {
+  return this.http
+    .get(`${this.baseUrl}/factura/${idFactura}`, {
+      headers: this.headers,
+      responseType: 'blob',
+    })
+    .pipe(catchError((e) => this.handleError(e)));
   }
 }
