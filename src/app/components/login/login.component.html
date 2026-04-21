@@ -1,0 +1,191 @@
+<div class="login-root">
+
+  <div class="bg-layer">
+    <div class="signal-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="scanlines"></div>
+  </div>
+
+  <aside class="brand-panel">
+    <div class="brand-content">
+      <div class="logo-wrap">
+        <div class="logo-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" stroke="#e65c00" stroke-width="2.5" opacity="0.3"/>
+            <circle cx="24" cy="24" r="14" stroke="#e65c00" stroke-width="2" opacity="0.6"/>
+            <circle cx="24" cy="24" r="6" fill="#e65c00"/>
+            <line x1="24" y1="2"  x2="24" y2="10" stroke="#e65c00" stroke-width="2" stroke-linecap="round"/>
+            <line x1="24" y1="38" x2="24" y2="46" stroke="#e65c00" stroke-width="2" stroke-linecap="round"/>
+            <line x1="2"  y1="24" x2="10" y2="24" stroke="#e65c00" stroke-width="2" stroke-linecap="round"/>
+            <line x1="38" y1="24" x2="46" y2="24" stroke="#e65c00" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">Viboral</span>
+          <span class="logo-sub">TELECOMUNICACIONES</span>
+        </div>
+      </div>
+      <div class="brand-headline">
+        <h1>Portal<br><em>de Asociados</em></h1>
+        <p class="brand-desc">Consulta tu estado de cuenta, facturas y atenciones desde un solo lugar, en tiempo real.</p>
+      </div>
+      <div class="waves-wrap">
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+        <div class="wave wave-4"></div>
+        <div class="wave-dot"></div>
+      </div>
+      <ul class="features">
+        <li><span class="feat-icon">📡</span><span>Estado de servicios en tiempo real</span></li>
+        <li><span class="feat-icon">🧾</span><span>Descarga tus facturas al instante</span></li>
+        <li><span class="feat-icon">🛠️</span><span>Historial de atenciones técnicas</span></li>
+      </ul>
+    </div>
+    <div class="brand-footer">
+      <span>NIT 811.013.014-1</span>
+      <span class="dot-sep">·</span>
+      <span>www.viboraltelecomunicaciones.com</span>
+    </div>
+  </aside>
+
+  <main class="form-panel">
+    <div class="form-card">
+
+      <div class="form-header">
+        <div class="form-badge">ACCESO SEGURO</div>
+        <h2>Bienvenido</h2>
+        <p>Ingresa con tu usuario y contraseña</p>
+      </div>
+
+      @if (error()) {
+        <div class="form-error">
+          <span>⚠️</span> {{ error() }}
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()" autocomplete="off">
+
+        <!-- Usuario -->
+        <div class="field-group">
+          <label for="usuario">Usuario</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <input
+              id="usuario" type="text"
+              placeholder="Ingresa tu usuario"
+              [value]="usuario()"
+              (input)="usuario.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="field-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
+            <label for="password" style="margin-bottom:0">Contraseña</label>
+            <!-- ✅ Olvidé mi contraseña -->
+            <button type="button" class="link-btn" (click)="olvidoContrasena()">
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input
+              id="password"
+              [type]="mostrarPw() ? 'text' : 'password'"
+              placeholder="••••••••"
+              [value]="password()"
+              (input)="password.set($any($event.target).value)"
+            />
+            <button type="button" class="pw-toggle" (click)="togglePw()">
+              @if (mostrarPw()) {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              } @else {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- ✅ Recordarme -->
+        <div class="remember-row">
+          <label class="checkbox-wrap">
+            <input
+              type="checkbox"
+              [checked]="recordarme()"
+              (change)="recordarme.set($any($event.target).checked)"
+            />
+            <span class="checkbox-box"></span>
+            <span>Recordarme</span>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [class.loading]="cargando()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="spinner-btn"></span>
+            <span>Verificando...</span>
+          } @else {
+            <span>Ingresar al Portal</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          }
+        </button>
+
+      </form>
+
+      <!-- ✅ Divisor -->
+      <div class="divider">
+        <span></span>
+        <p>¿No tienes cuenta?</p>
+        <span></span>
+      </div>
+
+      <!-- ✅ Botón Registrarse -->
+      <button type="button" class="btn-register" (click)="irARegistro()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/>
+          <line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
+        Crear una cuenta nueva
+      </button>
+
+      <div class="form-footer">
+        <span>¿Problemas para ingresar?</span>
+        <a href="tel:3147258728">Llama al 314 7258728</a>
+      </div>
+
+    </div>
+
+    <p class="version-tag">Portal v1.0 · Viboral Telecomunicaciones © 2026</p>
+  </main>
+
+</div>

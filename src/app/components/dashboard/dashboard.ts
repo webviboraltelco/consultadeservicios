@@ -7,7 +7,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ClienteApiService } from '../../shared/services/cliente-api.service';
 import {
   ActiveTab,
@@ -20,7 +20,7 @@ import {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, DatePipe],
+  imports: [DecimalPipe],
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent implements OnInit {
